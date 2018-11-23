@@ -1,11 +1,24 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-from flaskapp.model_base import ModelBase
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app, model_class=ModelBase)
+db = SQLAlchemy()
 
-from flaskapp import views
+
+def create_app(config_filename='flask.cfg'):
+    app = Flask(__name__, instance_relative_config=True)
+    app.config.from_pyfile(config_filename)
+    initialize_extensions(app)
+    register_blueprints(app)
+    return app
+
+
+def initialize_extensions(app):
+    from flaskapp.model_base import ModelBase
+    db.init_app(app)
+    db.Model = db.make_declarative_base(model=ModelBase, metadata=None)
+
+
+def register_blueprints(app):
+    from pedidos import pedidos_blueprint
+    app.register_blueprint(pedidos_blueprint)
