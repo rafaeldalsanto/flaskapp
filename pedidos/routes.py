@@ -6,6 +6,9 @@ from . import pedidos_blueprint
 
 @pedidos_blueprint.route('/')
 def index():
+    from pedidos.gateways import inserir_pedido
+    pedido = inserir_pedido(empresa_id=1, numero=21)
+
     return 'ok'
     # empresas = Empresa.query.all()
     # # empresa = Empresa(nome='Teste')

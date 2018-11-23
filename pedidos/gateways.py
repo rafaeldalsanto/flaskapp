@@ -1,3 +1,9 @@
+def as_dict(obj):
+    from sqlalchemy import inspect
+
+    return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
+
+
 def merge_dicts(base, other):
     return dict(base, **other) if other is not None else base
 
@@ -11,7 +17,11 @@ def inserir(model, **kwargs):
         'ultima_alteracao': datetime.now(),
     }, kwargs)
 
-    db.session.add(model(**props))
+    obj = model(**props)
+    db.session.add(obj)
+    db.session.flush()
+
+    return as_dict(obj)
 
 
 def atualizar(model, model_id, **kwargs):
@@ -33,7 +43,7 @@ def atualizar(model, model_id, **kwargs):
 def inserir_pedido(**kwargs):
     from pedidos.models import Pedido
 
-    inserir(Pedido, **kwargs)
+    return inserir(Pedido, **kwargs)
 
 
 def atualizar_pedido(pedido_id, **kwargs):
