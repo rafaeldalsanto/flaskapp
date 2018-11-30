@@ -24,3 +24,14 @@ def index():
     #     }
     #     for empresa in empresas
     # ])
+
+
+@pedidos_blueprint.route('/pedidos/cadastrar', methods=['POST'])
+def cadastrar_pedido():
+    from flask import request
+    from pedidos.gateways import inserir_pedido
+    from flask import jsonify
+
+    parametros = request.get_json()
+
+    return jsonify(parametros)
