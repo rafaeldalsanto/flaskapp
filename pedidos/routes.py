@@ -1,7 +1,7 @@
 # from flask.json import jsonify
 
 # from pedidos.models import Empresa
-from . import pedidos_blueprint
+from pedidos import pedidos_blueprint
 
 
 @pedidos_blueprint.route('/')
