@@ -32,7 +32,10 @@ def atualizar(tabela, id, **fields):
 
 def filtrar(tabela, **filtros):
     query = db.session.query(tabela)
-    return filter_or_exclude(query, negate=False, **filtros).all()
+    rows = []
+    for row in filter_or_exclude(query, negate=False, **filtros).all():
+        rows.append(as_dict(row))
+    return rows
 
 
 def obter_por_id(tabela, id):

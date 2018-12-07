@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Flaskapp</title>
+
+    <style>
+        .conteudo {
+            min-height: 200px;
+            font-size: 87.5%;
+            font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+        }
+
+        #corpoDaResposta {
+            min-height: 200px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Flaskapp</h1>
+    <form name="form" onsubmit="return enviar()">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group">
+                    <input type="text" name="url" class="form-control" placeholder="Url" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <select name="metodo" class="form-control">
+                        <option value="GET">GET</option>
+                        <option value="PUT">PUT</option>
+                        <option value="POST">POST</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <textarea name="conteudo" class="form-control conteudo" placeholder="Conteúdo"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </div>
+            <div class="col-md-4">
+                <div id="statusDaResposta"></div>
+            </div>
+        </div>
+    </form>
+
+    <br>
+    <div class="row">
+        <div class="col-md-12">
+            <pre id="corpoDaResposta" class="border border-dark"></pre>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script>
+    function enviar() {
+        const url = form.url.value
+        const metodo = form.metodo.value
+        const conteudo = form.conteudo.value
+
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json');
+
+        const request = {
+            method: metodo,
+            headers: headers
+        }
+
+        if (metodo !== 'GET')
+            request.body = conteudo
+
+        fetch(url, request)
+            .then(response => {
+                const contentType = response.headers.get('content-type')
+                if (contentType && contentType.indexOf('application/json') !== -1) {
+                    return response.json().then(json => respostaJson(response, json))
+                } else {
+                    return response.text().then(texto => respostaTexto(response, texto))
+                }
+            })
+            .catch(erro => tratarErro(erro))
+
+        return false
+    }
+
+    function respostaJson(resposta, json) {
+        toggleErroOuSucesso(resposta.ok)
+        exibirStatus(resposta.status, resposta.statusText)
+        exibirJson(json)
+    }
+
+    function respostaTexto(resposta, texto) {
+        toggleErroOuSucesso(resposta.ok)
+        exibirStatus(resposta.status, resposta.statusText)
+        exibirTexto(texto)
+    }
+
+    function tratarErro(erro) {
+        toggleErro()
+        exibirTexto('')
+
+        if (erro instanceof Error) {
+            exibirTexto(erro.message)
+        } else {
+            exibirTexto('Ocorreu um erro inesperado')
+        }
+    }
+
+    function toggleErroOuSucesso(sucesso) {
+        if (sucesso)
+            toggleSucesso()
+        else
+            toggleErro()
+    }
+
+    function toggleSucesso() {
+        const corpoDaResposta = $('#corpoDaResposta')
+        corpoDaResposta.removeClass('border border-dark')
+        corpoDaResposta.addClass('border border-success')
+        $('#statusDaResposta').css('color', '#28a745')
+    }
+
+    function toggleErro() {
+        const corpoDaResposta = $('#corpoDaResposta')
+        corpoDaResposta.removeClass('border border-success')
+        corpoDaResposta.addClass('border border-dark')
+        $('#statusDaResposta').css('color', '#dc3545')
+    }
+
+    function exibirStatus(status, statusText) {
+        $('#statusDaResposta').text(status + ' - ' + statusText)
+    }
+
+    function exibirJson(json) {
+        $('#corpoDaResposta').text(JSON.stringify(json, null, 2))
+    }
+
+    function exibirTexto(texto) {
+        $('#corpoDaResposta').text(texto)
+    }
+</script>
+</body>
+</html>

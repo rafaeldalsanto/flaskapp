@@ -1,37 +1,24 @@
-# from flask.json import jsonify
+from flask import request, jsonify
 
-# from pedidos.models import Empresa
 from pedidos import pedidos_blueprint
+from pedidos.gateways import filtrar_pedidos
 
 
-@pedidos_blueprint.route('/')
-def index():
-    from pedidos.gateways import inserir_pedido
-    pedido = inserir_pedido(empresa_id=1, numero=21)
-
-    return 'ok'
-    # empresas = Empresa.query.all()
-    # # empresa = Empresa(nome='Teste')
-    # # db.session.add(empresa)
-    # # db.session.commit()
-    #
-    # return jsonify([
-    #     {
-    #         'id': empresa.id,
-    #         'nome': empresa.nome,
-    #         'data_de_criacao': empresa.data_de_criacao,
-    #         'ultima_alteracao': empresa.ultima_alteracao
-    #     }
-    #     for empresa in empresas
-    # ])
+@pedidos_blueprint.route('/pedidos', methods=('GET',))
+def listar_pedidos():
+    pedidos = filtrar_pedidos()
+    return jsonify(pedidos)
 
 
-@pedidos_blueprint.route('/pedidos/cadastrar', methods=['POST'])
+@pedidos_blueprint.route('/pedidos', methods=('POST',))
 def cadastrar_pedido():
-    from flask import request
-    from pedidos.gateways import inserir_pedido
-    from flask import jsonify
+    parametros = request.get_json()
 
+    return jsonify(parametros)
+
+
+@pedidos_blueprint.route('/pedidos', methods=('PUT',))
+def alterar_pedido():
     parametros = request.get_json()
 
     return jsonify(parametros)
