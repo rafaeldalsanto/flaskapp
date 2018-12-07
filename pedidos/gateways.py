@@ -1,52 +1,18 @@
-def as_dict(obj):
-    from sqlalchemy import inspect
-
-    return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
+from flaskapp.gateway_generico import inserir, atualizar, filtrar, obter_por_id
+from pedidos.models import Pedido
 
 
-def merge_dicts(base, other):
-    return dict(base, **other) if other is not None else base
+def inserir_pedido(**campos):
+    return inserir(Pedido, **campos)
 
 
-def inserir(model, **kwargs):
-    from flaskapp import db
-    from datetime import datetime
-
-    props = merge_dicts({
-        'data_de_criacao': datetime.now(),
-        'ultima_alteracao': datetime.now(),
-    }, kwargs)
-
-    obj = model(**props)
-    db.session.add(obj)
-    db.session.flush()
-
-    return as_dict(obj)
+def atualizar_pedido(pedido_id, **campos):
+    atualizar(Pedido, pedido_id, **campos)
 
 
-def atualizar(model, model_id, **kwargs):
-    from flaskapp import db
-    from datetime import datetime
-
-    props = merge_dicts({
-        'ultima_alteracao': datetime.now(),
-    }, kwargs)
-
-    if 'data_de_criacao' in props:
-        del props['data_de_criacao']
-
-    db.session.query(model) \
-        .filter(model.id == model_id) \
-        .update(props)
+def filtrar_pedidos(**filtros):
+    return filtrar(Pedido, **filtros)
 
 
-def inserir_pedido(**kwargs):
-    from pedidos.models import Pedido
-
-    return inserir(Pedido, **kwargs)
-
-
-def atualizar_pedido(pedido_id, **kwargs):
-    from pedidos.models import Pedido
-
-    atualizar(Pedido, pedido_id, **kwargs)
+def obter_pedido_por_id(pedido_id):
+    return obter_por_id(Pedido, pedido_id)
