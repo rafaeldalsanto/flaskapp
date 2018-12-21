@@ -2,4 +2,3 @@ from flask import Blueprint
 pedidos_blueprint = Blueprint('pedidos', __name__, template_folder='templates')
 
 from pedidos import routes
-from pedidos import models

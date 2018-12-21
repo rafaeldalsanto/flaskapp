@@ -1,4 +1,4 @@
-from flaskapp import db
+from flaskapp.extensions import db
 from datetime import datetime
 from flaskapp.sqlalchemy_utils import as_dict, filter_or_exclude
 from flaskapp.common import merge_dicts

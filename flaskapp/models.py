@@ -1,25 +1,26 @@
-from flaskapp import db
+from flaskapp.database import Model
+from flaskapp.extensions import db
 
 
-class Empresa(db.Model):
+class Empresa(Model):
     nome = db.Column(db.String(length=200))
 
 
-class Cliente(db.Model):
+class Cliente(Model):
     empresa_id = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False)
     nome = db.Column(db.String(length=200))
 
     empresa = db.relationship('Empresa')
 
 
-class Produto(db.Model):
+class Produto(Model):
     empresa_id = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False)
     nome = db.Column(db.String(length=200))
 
     empresa = db.relationship('Empresa')
 
 
-class Pedido(db.Model):
+class Pedido(Model):
     empresa_id = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False)
     cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=True)
     numero = db.Column(db.Integer)
@@ -31,7 +32,7 @@ class Pedido(db.Model):
     itens = db.relationship('ItemDoPedido', back_populates='pedido')
 
 
-class ItemDoPedido(db.Model):
+class ItemDoPedido(Model):
     empresa_id = db.Column(db.Integer, db.ForeignKey('empresa.id'), nullable=False)
     pedido_id = db.Column(db.Integer, db.ForeignKey('pedido.id'), nullable=False)
     produto_id = db.Column(db.Integer, db.ForeignKey('produto.id'), nullable=False)

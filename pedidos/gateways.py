@@ -1,5 +1,5 @@
 from flaskapp.gateway_generico import inserir, atualizar, filtrar, obter_por_id
-from pedidos.models import Pedido
+from flaskapp.models import Pedido
 
 
 def inserir_pedido(**campos):
