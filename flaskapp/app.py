@@ -20,7 +20,9 @@ def initialize_extensions(app):
 
 def register_blueprints(app):
     from geral import geral_blueprint
+    from empresas import empresas_blueprint
     from pedidos import pedidos_blueprint
 
     app.register_blueprint(geral_blueprint)
+    app.register_blueprint(empresas_blueprint)
     app.register_blueprint(pedidos_blueprint)

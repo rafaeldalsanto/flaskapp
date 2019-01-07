@@ -30,7 +30,7 @@ def atualizar(tabela, id, **fields):
         .update(props)
 
 
-def filtrar(tabela, **filtros):
+def obter(tabela, **filtros):
     query = db.session.query(tabela)
     rows = []
     for row in filter_or_exclude(query, negate=False, **filtros).all():
@@ -38,8 +38,8 @@ def filtrar(tabela, **filtros):
     return rows
 
 
-def obter_por_id(tabela, id):
-    registros = filtrar(tabela, id=id)
+def obter_um(tabela, **filtros):
+    registros = obter(tabela, **filtros)
 
     if len(registros) == 0:
         return None
