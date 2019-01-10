@@ -1,7 +1,19 @@
-from flaskapp.extensions import db
 from datetime import datetime
-from flaskapp.sqlalchemy_utils import as_dict, filter_or_exclude
+
 from flaskapp.common import merge_dicts
+from flaskapp.extensions import db
+from flaskapp.sqlalchemy_utils import as_dict
+
+
+class Transaction:
+    def __enter__(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_val is None:
+            db.session.commit()
+        else:
+            db.session.rollback()
 
 
 def inserir(tabela, **fields):
@@ -31,11 +43,8 @@ def atualizar(tabela, id, **fields):
 
 
 def obter(tabela, **filtros):
-    query = db.session.query(tabela)
-    rows = []
-    for row in filter_or_exclude(query, negate=False, **filtros).all():
-        rows.append(as_dict(row))
-    return rows
+    query = db.session.query(tabela).filter_by(**filtros)
+    return list(query)
 
 
 def obter_um(tabela, **filtros):
